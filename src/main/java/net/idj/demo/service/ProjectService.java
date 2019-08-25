@@ -1,7 +1,9 @@
 package net.idj.demo.service;
 
+import net.idj.demo.domain.Backlog;
 import net.idj.demo.domain.Project;
 import net.idj.demo.exceptions.ProjectIdExceptions;
+import net.idj.demo.repositories.BacklogRepository;
 import net.idj.demo.repositories.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,12 +16,25 @@ public class ProjectService {
     @Autowired
     private ProjectRepository projectRepository;
 
+    @Autowired
+    private BacklogRepository backlogRepository;
+
     public Project saveOrUpdateProject(Project project){
+        String projectIdentifier = project.getProjectIdentifier().toUpperCase();
         try{
-            project.setProjectIdentifier(project.getProjectIdentifier().toUpperCase());
+            project.setProjectIdentifier(projectIdentifier);
+            if(project.getId()==null) {
+                Backlog backlog = new Backlog();
+                project.setBacklog(backlog);
+                backlog.setProject(project);
+                backlog.setProjectIdentifier(project.getProjectIdentifier().toUpperCase());
+            }
+            if(project.getId()!=null){
+                project.setBacklog(backlogRepository.findByProjectIdentifier(projectIdentifier));
+            }
             return projectRepository.save(project);
         }catch (Exception e){
-            throw new ProjectIdExceptions("Project ID '"+project.getProjectIdentifier().toUpperCase()+"' already exists");
+            throw new ProjectIdExceptions("Project ID '"+projectIdentifier+"' already exists");
         }
     }
 
