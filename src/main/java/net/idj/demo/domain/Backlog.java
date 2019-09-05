@@ -1,4 +1,5 @@
 package net.idj.demo.domain;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
@@ -11,17 +12,19 @@ public class Backlog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Integer PISequence;
+    private Integer PTSequence = 0;
     private String projectIdentifier;
 
     //OneToOne with project
     @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "project_id", nullable = false)
+    @JoinColumn(name="project_id",nullable = false)
     @JsonIgnore
     private Project project;
-    //OneToMany projectTasks
+
+    //OneToMany projecttasks
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "backlog")
     private List<ProjectTask> projectTasks = new ArrayList<>();
+
 
     public Backlog() {
     }
@@ -34,12 +37,12 @@ public class Backlog {
         this.id = id;
     }
 
-    public Integer getPISequence() {
-        return PISequence;
+    public Integer getPTSequence() {
+        return PTSequence;
     }
 
-    public void setPISequence(Integer PISequence) {
-        this.PISequence = PISequence;
+    public void setPTSequence(Integer PTSequence) {
+        this.PTSequence = PTSequence;
     }
 
     public String getProjectIdentifier() {

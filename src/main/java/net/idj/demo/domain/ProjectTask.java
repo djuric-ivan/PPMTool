@@ -14,15 +14,15 @@ public class ProjectTask {
     private Long id;
     @Column(updatable = false)
     private String projectSequence;
-    @NotBlank(message = "Please include project summary")
+    @NotBlank(message = "Please include a project summary")
     private String summary;
     private String acceptanceCriteria;
     private String status;
     private Integer priority;
     private Date dueDate;
     //ManyToOne with Backlog
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
-    @JoinColumn(name ="backlog_id",updatable = false, nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
+    @JoinColumn(name="backlog_id", updatable = false, nullable = false)
     @JsonIgnore
     private Backlog backlog;
 
@@ -123,10 +123,14 @@ public class ProjectTask {
     }
 
     @PrePersist
-    protected void onCreate(){this.create_At = new Date();}
+    protected void onCreate(){
+        this.create_At = new Date();
+    }
 
     @PreUpdate
-    protected  void onUpdate(){ this.update_At = new Date();}
+    protected void onUpdate(){
+        this.update_At = new Date();
+    }
 
     @Override
     public String toString() {
@@ -138,9 +142,10 @@ public class ProjectTask {
                 ", status='" + status + '\'' +
                 ", priority=" + priority +
                 ", dueDate=" + dueDate +
-                ", projectIdentifier='" + projectIdentifier + '\'' +
+                ", projectIdentifer='" + projectIdentifier + '\'' +
                 ", create_At=" + create_At +
                 ", update_At=" + update_At +
                 '}';
     }
 }
+
