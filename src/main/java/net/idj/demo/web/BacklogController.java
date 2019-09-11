@@ -1,6 +1,8 @@
 package net.idj.demo.web;
 
+import net.idj.demo.domain.Backlog;
 import net.idj.demo.domain.ProjectTask;
+import net.idj.demo.repositories.BacklogRepository;
 import net.idj.demo.service.MapValidatorErrorService;
 import net.idj.demo.service.ProjectTaskService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import reactor.netty.http.server.HttpServerResponse;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/backlog")
@@ -25,12 +28,17 @@ public class BacklogController {
 
     @PostMapping("/{backlog_id}")
     public ResponseEntity<?> addPTtoBacklog(@Valid @RequestBody ProjectTask projectTask,
-                                            BindingResult result, @PathVariable String backlog_id){
+                                            BindingResult result, @PathVariable String backlog_id) {
         ResponseEntity<?> errorMap = mapValidatorErrorService.mapValidatorService(result);
-        if(errorMap!=null) return errorMap;
+        if (errorMap != null) return errorMap;
         ProjectTask projectTask1 = projectTaskService.addProjectTask(backlog_id, projectTask);
 
         return new ResponseEntity<ProjectTask>(projectTask1, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/{backlog_id}")
+    public Iterable<ProjectTask> getProjectBacklog (@PathVariable String backlog_id){
+        return projectTaskService.findBacklogById(backlog_id);
     }
 
 }

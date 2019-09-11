@@ -2,13 +2,11 @@ package net.idj.demo.service;
 
 import net.idj.demo.domain.Backlog;
 import net.idj.demo.domain.Project;
-import net.idj.demo.exceptions.ProjectIdExceptions;
+import net.idj.demo.exceptions.ProjectIdException;
 import net.idj.demo.repositories.BacklogRepository;
 import net.idj.demo.repositories.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class ProjectService {
@@ -34,14 +32,14 @@ public class ProjectService {
             }
             return projectRepository.save(project);
         }catch (Exception e){
-            throw new ProjectIdExceptions("Project ID '"+projectIdentifier+"' already exists");
+            throw new ProjectIdException("Project ID '"+projectIdentifier+"' already exists");
         }
     }
 
     public Project findProjectByIdentifier(String projectId){
         Project project = projectRepository.findByProjectIdentifier(projectId.toUpperCase());
         if(project == null) {
-            throw new ProjectIdExceptions("Project ID "+projectId+" does not exists");
+            throw new ProjectIdException("Project ID "+projectId+" does not exists");
         }
         return project;
     }
@@ -52,7 +50,7 @@ public class ProjectService {
 
     public void deleteByProjectIdentifier(String projectId){
         Project project = projectRepository.findByProjectIdentifier(projectId.toUpperCase());
-        if(project==null){ throw new ProjectIdExceptions("Cannot delete Project with ID '"+projectId+"'. This project does not exist");}
+        if(project==null){ throw new ProjectIdException("Cannot delete Project with ID '"+projectId+"'. This project does not exist");}
         projectRepository.delete(project);
     }
 }
