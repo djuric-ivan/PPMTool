@@ -1,5 +1,6 @@
 package net.idj.demo.service;
 import net.idj.demo.domain.Backlog;
+import net.idj.demo.domain.Project;
 import net.idj.demo.domain.ProjectTask;
 import net.idj.demo.exceptions.ProjectNotFoundException;
 import net.idj.demo.repositories.BacklogRepository;
@@ -58,5 +59,36 @@ public class ProjectTaskService {
         }
         return projectTasks;
     }
+
+    public ProjectTask findPTByProjectSequence (String backlog_id,String pt_id){
+        Backlog backlog = backlogRepository.findByProjectIdentifier(backlog_id);
+        if(backlog==null){
+            throw new ProjectNotFoundException("Project with ID: '"+backlog_id+"' does not exist");
+        }
+        ProjectTask projectTask = projectTaskRepository.findByProjectSequence(pt_id);
+        if(projectTask==null){
+            throw  new ProjectNotFoundException("Project Task '"+pt_id+"' not found");
+        }
+
+        if(!projectTask.getBacklog().getProjectIdentifier().equals(backlog_id)){
+            throw new ProjectNotFoundException("Project task '"+pt_id+"' does not exist in project: '"+backlog_id+"'");
+        }
+
+        return projectTask;
+    }
+
+    public ProjectTask updateByProjectSequence (ProjectTask updatedTask, String backlog_id, String pt_id){
+        ProjectTask projectTask = findPTByProjectSequence(backlog_id,pt_id);
+        projectTask = updatedTask;
+
+        return  projectTaskRepository.save(projectTask);
+
+    }
+
+    public void deletePTByProjectSequence(String backlog_id, String pt_id){
+        ProjectTask projectTask = findPTByProjectSequence(backlog_id,pt_id);
+        projectTaskRepository.delete(projectTask);
+    }
+
 }
 
