@@ -3,6 +3,7 @@ package net.idj.demo.web;
 import net.idj.demo.domain.User;
 import net.idj.demo.service.MapValidatorErrorService;
 import net.idj.demo.service.UserService;
+import net.idj.demo.validatior.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,10 +22,13 @@ public class UserController {
     private MapValidatorErrorService mapValidatorErrorService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private UserValidator userValidator;
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@Valid @RequestBody User user, BindingResult result){
         //Validate the password match
+        userValidator.validate(user, result);
         ResponseEntity<?> errorMap = mapValidatorErrorService.mapValidatorService(result);
         if(errorMap != null){ return errorMap; }
 
