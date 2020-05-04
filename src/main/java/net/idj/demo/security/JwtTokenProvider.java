@@ -1,7 +1,6 @@
 package net.idj.demo.security;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import net.idj.demo.domain.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -22,8 +21,6 @@ public class JwtTokenProvider {
         Date now = new Date();
 
         Date expiryDate = new Date(now.getTime()+ EXPIRATION_TIME);
-
-
         String userId = Long.toString(user.getId());
         Map<String, Object> claims = new HashMap<>();
         claims.put("id", userId);
@@ -42,5 +39,27 @@ public class JwtTokenProvider {
 
     //Validate the token
 
+    public boolean validateToken(String token){
+        try{
+            Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token);
+            return true;
+        }catch (SignatureException ex){
+            System.out.println("Invalid JWT Signature");
+        }catch (MalformedJwtException ex){
+            System.out.println("Invalid JWT Token");
+        }catch (UnsupportedJwtException ex){
+            System.out.println("Unsupported JWT token");
+        }catch (IllegalArgumentException ex){
+            System.out.println("JWT claims string is empty");
+        }
+        return false;
+    }
+
     //Get userId from the token
+    public Long getUserIdFromJWT(String token){
+        Claims climes = Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token).getBody();
+        String id = (String) climes.get("id");
+        return Long.parseLong(id);
+    }
+
 }
