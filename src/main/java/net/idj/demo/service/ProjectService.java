@@ -2,22 +2,32 @@ package net.idj.demo.service;
 
 import net.idj.demo.domain.Backlog;
 import net.idj.demo.domain.Project;
+import net.idj.demo.domain.User;
 import net.idj.demo.exceptions.ProjectIdException;
 import net.idj.demo.repositories.BacklogRepository;
 import net.idj.demo.repositories.ProjectRepository;
+import net.idj.demo.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class ProjectService {
 
     @Autowired
     private ProjectRepository projectRepository;
-
     @Autowired
     private BacklogRepository backlogRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-    public Project saveOrUpdateProject(Project project){
+    public Project saveOrUpdateProject(Project project, String username){
+        Optional<User> user = userRepository.findByUsername(username);
+
+        project.setUser(user.get());
+        project.setProjectLeader(user.get().getUsername());
+
         String projectIdentifier = project.getProjectIdentifier().toUpperCase();
         try{
             project.setProjectIdentifier(projectIdentifier);

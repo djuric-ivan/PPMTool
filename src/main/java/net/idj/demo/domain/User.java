@@ -6,8 +6,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 public class User implements UserDetails {
@@ -17,7 +19,7 @@ public class User implements UserDetails {
     private Long id;
     @NotBlank(message = "username is required")
     @Email(message = "Username needs to be an email")
-    @Column(unique = true)
+    @Column(length = 100,unique = true)
     private String username;
     @NotBlank(message = "Please enter your name")
     private String fullName;
@@ -29,6 +31,8 @@ public class User implements UserDetails {
     private Date update_At;
 
     //OneToMany with Project
+    @OneToMany(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER, mappedBy = "user", orphanRemoval = true)
+    private List<Project> projects = new ArrayList<>();
 
     public User() {
     }
@@ -87,6 +91,14 @@ public class User implements UserDetails {
 
     public void setUpdate_At(Date update_At) {
         this.update_At = update_At;
+    }
+
+    public List<Project> getProjects() {
+        return projects;
+    }
+
+    public void setProjects(List<Project> projects) {
+        this.projects = projects;
     }
 
     @PrePersist
